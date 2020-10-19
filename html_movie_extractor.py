@@ -1,8 +1,9 @@
 import bs4
 import re
+from Moviecable import Movie
 
 
-def get_movie_titles(td):
+def extract_movie_data(td):
     # contents of <td> tag look like this:
     # <i><a>title</a></i>year<a>director</a><br> .... <i><a>title</a></i>year<a>director</a>
     movie_list = list()
@@ -11,10 +12,13 @@ def get_movie_titles(td):
     movie_year = ''
     for content in td.contents:
         if type(content) is bs4.element.Tag:
-            if content.name == 'i':
-                movie_title = content.find('a').contents[0].strip()
+            if content.get_text() is not None and movie_title == '':
+                # when movie_title is not empty, we have already parsed the title.
+                # So this string is something else, like the director. We can skip it.
+                movie_title = content.get_text().strip()
             elif content.name == 'br':
-                movie_list.append(Movie(movie_title, movie_year))
+                movie = Movie(movie_title, movie_year)
+                movie_list.append(movie)
                 # reset movie title & year
                 movie_title = ''
                 movie_year = ''
@@ -26,24 +30,5 @@ def get_movie_titles(td):
     if movie_title != '' and movie_year != '':
         movie_list.append(Movie(movie_title, movie_year))
 
-    for movie in movie_list:
-        print("%s %s" % (movie.get_title(), movie.get_year()))
+    return movie_list
 
-
-# Defining a class for movie objects
-class Movie:
-    def __init__(self, title, year):
-        self.title = title
-        self.year = year
-
-    def get_title(self):
-        return self.title
-
-    def get_year(self):
-        return self.year
-
-    def set_title(self, title):
-        self.title = title
-
-    def set_year(self, year):
-        self.year = year
