@@ -11,7 +11,10 @@ pattern_iter_val = re.compile("(?<=Iteration\s+\d:\s)\d+\.\d+(?=\s+ms)")
 # JMH example: "(param1 = 99, param2 = full, param3 = true)"
 pattern_param_val = "(?<=(\(|(,\s))[\w\d]+\s=\s)[\w\d\[\]\.\,\s]+[\w\d]+(?=\)|,)"
 
-with open("jmh_result.txt", "r") as f:
+txt_file = "jmh_result.txt"
+csv_file = "jmh_result.csv"
+
+with open(txt_file, "r") as f:
     params = []
     rows = []
     for line in f:
@@ -42,4 +45,4 @@ columns.extend([f'param{x}' for x in range(1, df.shape[1])])
 df.columns = columns
 
 # create to CSV file
-df.to_csv("jmh_result.csv", index=True)
+df.to_csv(csv_file, index=True)
